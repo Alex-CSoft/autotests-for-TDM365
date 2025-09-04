@@ -31,4 +31,4 @@ Ex_login = "Ex"
 Ex_password = "Tdm365"
 
 #Путь к exe. файл с chromedriver
-CHROME_DRIVER_PATH = 'C:/Users/testlab\Desktop/Автотесты/driver/chromedriver-win64/chromedriver.exe'
+CHROME_DRIVER_PATH = 'C:/Users/testlab/Desktop/driver/chromedriver-win64/chromedriver.exe'
