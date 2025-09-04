@@ -1,1 +1,12 @@
 driver/
+# Исключаем драйверы браузеров
+driver/
+*.dll
+*.exe
+*.zip
+
+# Исключаем временные файлы
+__pycache__/
+*.pyc
+*.log
+screenshots/
