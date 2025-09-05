@@ -41,11 +41,7 @@ SELECTORS = {
     "create_user": (By.XPATH, '//*[@id="modalRoot"]//button[4]'),
     "description_field": (By.XPATH, '//*[@id="modalRoot"]/div[4]/div/div/div/div/div[2]/div/div/div[2]/div/input'),
     "login_field": (By.XPATH, '//*[@id="modalRoot"]/div[4]/div/div/div/div/div[2]/div/div/div[4]/div/input'),
-    #"checkbox": (By.XPATH, '/html/body/div[2]/div[2]/div/div/div/div/div[2]/div/div/div[5]/div/span'),
-    #"checkbox": (By.CSS_SELECTOR, '[data-signature="checkbox-body"]'),
-    #"btn_create_user": (By.XPATH, '/html/body/div[2]/div[4]/div/div/div/div/div[3]/button[1]'),
     "btn_create_user": (By.CLASS_NAME, "Buttons_selectionsButton__Ll7-A"),
-    #"btn_create_user": (By.CSS_SELECTOR, '[data-reference="ok-modal-window-btn"]'),
 }
 
 # ---- Helpers ----
@@ -80,7 +76,7 @@ def click(driver, selector, timeout=WAIT):
     element.click()
 
 # ---- Steps ----
-def login(driver):
+def test_login(driver):
     driver.get(URL)
     #Вводим логин
     login_input = find(driver, SELECTORS["login-authorization"])
@@ -93,10 +89,10 @@ def login(driver):
     click(driver, SELECTORS["login_submit"])
     # контрольная точка: меню "Объекты"
     click(driver, SELECTORS["menu_objects"])
-    return True
+    assert True
 
 #Создание пользователя (Администратор проекта)
-def create_user_in_group(driver):
+def test_create_user_in_group(driver):
     click(driver, SELECTORS["btn_group_admin"])
     click(driver, SELECTORS["project_Administrators"])
     click(driver, SELECTORS["create_user"])
@@ -114,6 +110,7 @@ def create_user_in_group(driver):
     # check.send_keys(" ")
     #click(driver, SELECTORS["checkbox"])
     click(driver, SELECTORS["btn_create_user"])
+    assert True
 
 # ---- Main ----
 if __name__ == "__main__":
@@ -123,8 +120,8 @@ if __name__ == "__main__":
         try: driver.maximize_window()
         except Exception: pass
 
-        login(driver)
-        create_user_in_group(driver)
+        test_login(driver)
+        test_create_user_in_group(driver)
         print("[RESULT] Успешно — пользователь создан")
     except Exception as e:
         print("[ERROR]", e)
