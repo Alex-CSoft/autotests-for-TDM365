@@ -7,14 +7,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 # ---- Импорт чувствительных данных ----
-try:
-    from access import CHROME_DRIVER_PATH#, URL, sys_login, sys_password
-except Exception as e:
-    raise ImportError from e
+#try:
+#    from access import CHROME_DRIVER_PATH, URL, sys_login, sys_password
+#except Exception as e:
+#    raise ImportError from e
 
 URL = os.environ.get("URL")
 sys_login = os.environ.get("sys_login")
 sys_password = os.environ.get("sys_password")
+CHROME_DRIVER_PATH = os.environ.get("/usr/bin/chromedriver")
 
 # ---- Настройки / селекторы ----
 WAIT = 10
