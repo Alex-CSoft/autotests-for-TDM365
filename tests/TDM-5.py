@@ -1,4 +1,5 @@
 import os, time
+import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -74,6 +75,13 @@ def click(driver, selector, timeout=WAIT):
         EC.element_to_be_clickable((by, value))
     )
     element.click()
+
+# ---- Fixtures ----
+@pytest.fixture
+def driver():
+    driver = get_driver()
+    yield driver
+    driver.quit()
 
 # ---- Steps ----
 def test_login(driver):
