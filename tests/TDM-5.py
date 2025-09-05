@@ -13,10 +13,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 #except Exception as e:
 #    raise ImportError from e
 
-URL = os.environ.get("URL")
-sys_login = os.environ.get("sys_login")
-sys_password = os.environ.get("sys_password")
-CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH")
+URL = os.environ.get("URL") or "http://vm-test-11x64-7:5440/client/"
+sys_login = os.environ.get("sys_login") or "SYSADMIN"
+sys_password = os.environ.get("sys_password") or "Tdm365"
+CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH") or "/usr/bin/chromedriver"
 
 # ---- Настройки / селекторы ----
 WAIT = 10
