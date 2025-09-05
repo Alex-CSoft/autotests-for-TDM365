@@ -1,4 +1,5 @@
 import os, time
+import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -9,10 +10,15 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.action_chains import ActionChains 
 
 # ---- Импорт чувствительных данных ----
-try:
-    from access import URL, sys_login, sys_password, CHROME_DRIVER_PATH #В зависимости от теста могут меняться!!!
-except Exception as e:
-    raise ImportError("Создайте access.py с URL, sys_login, sys_password, CHROME_DRIVER_PATH (опционально).") from e
+#try:
+#    from access import URL, sys_login, sys_password, CHROME_DRIVER_PATH #В зависимости от теста могут меняться!!!
+#except Exception as e:
+#    raise ImportError("Создайте access.py с URL, sys_login, sys_password, CHROME_DRIVER_PATH (опционально).") from e
+
+URL = os.environ.get("URL") or "http://10.19.10.216:5440"
+sys_login = os.environ.get("sys_login") or "SYSADMIN"
+sys_password = os.environ.get("sys_password") or "Tdm365"
+CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH") or "/usr/bin/chromedriver"
 
 # ---- Настройки / селекторы ----
 WAIT = 10
@@ -37,18 +43,16 @@ SELECTORS = {
 def get_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
+    #options.add_argument("--headless")  # Можно убрать, если нужен видимый браузер
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-infobars") #Убрать после отладки
+    options.add_argument("--disable-extensions") #Убрать после отладки
     
-    if CHROME_DRIVER_PATH:
-        service = ChromeService(executable_path=CHROME_DRIVER_PATH)
-    else:
-        service = ChromeService(ChromeDriverManager().install())
-    
-    driver = webdriver.Chrome(service=service, options=options)
-    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-    return driver
+    # Используем webdriver-manager для автоматического скачивания подходящего драйвера
+    service = ChromeService(ChromeDriverManager().install())
+
+    return webdriver.Chrome(service=service, options=options)
 
 def ss(driver, name="err"):
     path = os.path.join(SCREENSHOT_DIR, f"{name}_{int(time.time())}.png")
@@ -79,8 +83,15 @@ def right_click(driver, selector, timeout=10):
     )
     ActionChains(driver).context_click(element).perform()
 
+# ---- Fixtures ----
+@pytest.fixture(scope="session")
+def driver():
+    driver = get_driver()
+    yield driver
+    driver.quit()
+
 # ---- Steps ----
-def login(driver):
+def test_login(driver):
     try:
         print("[STEP] Переходим на страницу логина")
         driver.get(URL)
@@ -114,7 +125,7 @@ def login(driver):
         ss(driver, "login_error")
         return False
     
-def test(driver):
+def test_test(driver):
     try:
         print("[STEP] Открываем форму 'Редактирование объекта'")
         click(driver, SELECTORS["object_dev"])
@@ -156,7 +167,7 @@ if __name__ == "__main__":
         print("[TEST] Запуск теста авторизации...")
         
         # Шаг 1: Авторизация
-        auth_success = login(driver)
+        auth_success = test_login(driver)
         
         if not auth_success:
             print("[RESULT] Тест провален на этапе авторизации!")
@@ -166,7 +177,7 @@ if __name__ == "__main__":
         print("[INFO] Авторизация успешна, запускаем тестовые действия...")
 
         #Шаг 2: Выполнение тестовых шагов (Описаны в тесте TDM-6:Создание объекта разработки)
-        test_success = test(driver)
+        test_success = test_test(driver)
         
         if not test_success:
             print("[RESULT] Тест провален на этапе тестовых действий!")

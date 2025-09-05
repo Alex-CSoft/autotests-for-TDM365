@@ -49,9 +49,11 @@ SELECTORS = {
 def get_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
-    options.add_argument("--headless")  # Можно убрать, если нужен видимый браузер
+    #options.add_argument("--headless")  # Можно убрать, если нужен видимый браузер
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-infobars") #Убрать после отладки
+    options.add_argument("--disable-extensions") #Убрать после отладки
 
     # Используем webdriver-manager для автоматического скачивания подходящего драйвера
     service = ChromeService(ChromeDriverManager().install())
@@ -80,7 +82,7 @@ def click(driver, selector, timeout=WAIT):
     element.click()
 
 # ---- Fixtures ----
-@pytest.fixture
+@pytest.fixture(scope="session")
 def driver():
     driver = get_driver()
     yield driver
@@ -98,12 +100,13 @@ def test_login(driver):
     password_input.clear()
     password_input.send_keys(sys_password)
     click(driver, SELECTORS["login_submit"])
+
+#Создание пользователя (Администратор проекта)
+def test_create_user_in_group(driver):
     # контрольная точка: меню "Объекты"
     click(driver, SELECTORS["menu_objects"])
     assert True
 
-#Создание пользователя (Администратор проекта)
-def test_create_user_in_group(driver):
     click(driver, SELECTORS["btn_group_admin"])
     click(driver, SELECTORS["project_Administrators"])
     click(driver, SELECTORS["create_user"])
@@ -122,6 +125,7 @@ def test_create_user_in_group(driver):
     #click(driver, SELECTORS["checkbox"])
     click(driver, SELECTORS["btn_create_user"])
     assert True
+    time.sleep(2)  # Пауза
 
 # ---- Main ----
 if __name__ == "__main__":
