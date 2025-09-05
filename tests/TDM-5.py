@@ -49,10 +49,13 @@ SELECTORS = {
 def get_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
-    if CHROME_DRIVER_PATH:
-        service = ChromeService(executable_path=CHROME_DRIVER_PATH)
-    else:
-        service = ChromeService(ChromeDriverManager().install())
+    options.add_argument("--headless")  # Можно убрать, если нужен видимый браузер
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
+    # Используем webdriver-manager для автоматического скачивания подходящего драйвера
+    service = ChromeService(ChromeDriverManager().install())
+
     return webdriver.Chrome(service=service, options=options)
 
 def ss(driver, name="err"):
