@@ -43,11 +43,11 @@ SELECTORS = {
 def get_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
-    #options.add_argument("--headless")  # Можно убрать, если нужен видимый браузер
+    options.add_argument("--headless")  # Можно убрать, если нужен видимый браузер
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-infobars") #Убрать после отладки
-    options.add_argument("--disable-extensions") #Убрать после отладки
+    #options.add_argument("--disable-infobars") #Убрать после отладки
+    #options.add_argument("--disable-extensions") #Убрать после отладки
     
     # Используем webdriver-manager для автоматического скачивания подходящего драйвера
     service = ChromeService(ChromeDriverManager().install())
