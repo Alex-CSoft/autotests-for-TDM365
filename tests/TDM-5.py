@@ -15,7 +15,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 URL = os.environ.get("URL")
 sys_login = os.environ.get("sys_login")
 sys_password = os.environ.get("sys_password")
-CHROME_DRIVER_PATH = os.environ.get("/usr/bin/chromedriver")
+CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH")
 
 # ---- Настройки / селекторы ----
 WAIT = 10
