@@ -1,3 +1,5 @@
 pytest
 junitparser
 TestLink-API-Python-client
+selenium
+webdriver-manager
