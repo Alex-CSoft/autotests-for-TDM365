@@ -91,7 +91,7 @@ def driver():
     driver.quit()
 
 # ---- Steps ----
-def test_login(driver):
+def test_TDM6(driver):
     try:
         print("[STEP] Переходим на страницу логина")
         driver.get(URL)
@@ -112,21 +112,9 @@ def test_login(driver):
 
         time.sleep(2)  # Пауза
         
-        try:
-            click(driver, SELECTORS["menu_objects"], timeout=15)
-            print("[STEP] Открылся раздел 'Объекты'")
-            return True
-        except TimeoutException:
-            print("[ERROR] Не удалось найти меню 'Объекты' после авторизации")
-            return False
-            
-    except Exception as e:
-        print(f"[ERROR в login()]: {e}")
-        ss(driver, "login_error")
-        return False
-    
-def test_test(driver):
-    try:
+        click(driver, SELECTORS["menu_objects"], timeout=15)
+        print("[STEP] Открылся раздел 'Объекты'")
+        
         print("[STEP] Открываем форму 'Редактирование объекта'")
         click(driver, SELECTORS["object_dev"])
 
@@ -146,13 +134,11 @@ def test_test(driver):
         time.sleep(2)  # Пауза
 
         return True
-
+            
     except Exception as e:
         print(f"[ERROR в login()]: {e}")
         ss(driver, "login_error")
         return False
-
-
 # ---- Main ----
 if __name__ == "__main__":
     driver = None
@@ -167,24 +153,14 @@ if __name__ == "__main__":
         print("[TEST] Запуск теста авторизации...")
         
         # Шаг 1: Авторизация
-        auth_success = test_login(driver)
+        auth_success = test_TDM6(driver)
         
         if not auth_success:
             print("[RESULT] Тест провален на этапе авторизации!")
             ss(driver, "auth_failed")
             exit(1)  # Завершаем выполнение
             
-        print("[INFO] Авторизация успешна, запускаем тестовые действия...")
-
-        #Шаг 2: Выполнение тестовых шагов (Описаны в тесте TDM-6:Создание объекта разработки)
-        test_success = test_test(driver)
-        
-        if not test_success:
-            print("[RESULT] Тест провален на этапе тестовых действий!")
-            ss(driver, "test_failed")
-            exit(1) #Завершаем выполнение
-
-        print("[RESULT] Весь тест пройден успешно!")        
+        print("[RESULT] Весь тест пройден успешно!")   
             
     except Exception as e:
         print(f"[CRITICAL ERROR]: {e}")
