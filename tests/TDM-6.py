@@ -43,7 +43,7 @@ SELECTORS = {
 def get_driver():
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
-    options.add_argument("--headless")  # Можно убрать, если нужен видимый браузер
+    options.add_argument("--headless")  # убрать во время отладки
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     #options.add_argument("--disable-infobars") #Убрать после отладки
@@ -54,14 +54,8 @@ def get_driver():
 
     return webdriver.Chrome(service=service, options=options)
 
-def ss(driver, name="err"):
-    path = os.path.join(SCREENSHOT_DIR, f"{name}_{int(time.time())}.png")
-    try:
-        driver.save_screenshot(path)
-        print(f"[SCREENSHOT] Сохранен: {path}")
-    except Exception as e:
-        print(f"[SCREENSHOT ERROR] {e}")
-    return path
+def ss(driver, name):
+    driver.save_screenshot(f"{name}.png")
 
 def find(driver, selector, timeout=WAIT):
     by, value = selector
@@ -132,41 +126,39 @@ def test_TDM6(driver):
         click(driver, SELECTORS["ok_button"])
 
         time.sleep(2)  # Пауза
+            
+    except Exception as e:
+        ss(driver, "TDM6_error")
+        pytest.fail(f"[ERROR] Тест упал: {e}", pytrace=True)
 
-        return True
-            
-    except Exception as e:
-        print(f"[ERROR в login()]: {e}")
-        ss(driver, "login_error")
-        return False
-# ---- Main ----
-if __name__ == "__main__":
-    driver = None
-    try:
-        driver = get_driver()
-        try: 
-            driver.maximize_window()
-            print("[INFO] Окно браузера maximized")
-        except Exception as e: 
-            print(f"[WARNING] Не удалось maximize окно: {e}")
+# ---- Main ---- Требуется для локальной отладки (Для Jenkins не нужно)
+# if __name__ == "__main__":
+#     driver = None
+#     try:
+#         driver = get_driver()
+#         try: 
+#             driver.maximize_window()
+#             print("[INFO] Окно браузера maximized")
+#         except Exception as e: 
+#             print(f"[WARNING] Не удалось maximize окно: {e}")
         
-        print("[TEST] Запуск теста авторизации...")
+#         print("[TEST] Запуск теста авторизации...")
         
-        # Шаг 1: Авторизация
-        auth_success = test_TDM6(driver)
+#         # Шаг 1: Авторизация
+#         auth_success = test_TDM6(driver)
         
-        if not auth_success:
-            print("[RESULT] Тест провален на этапе авторизации!")
-            ss(driver, "auth_failed")
-            exit(1)  # Завершаем выполнение
+#         if not auth_success:
+#             print("[RESULT] Тест провален на этапе авторизации!")
+#             ss(driver, "auth_failed")
+#             exit(1)  # Завершаем выполнение
             
-        print("[RESULT] Весь тест пройден успешно!")   
+#         print("[RESULT] Весь тест пройден успешно!")   
             
-    except Exception as e:
-        print(f"[CRITICAL ERROR]: {e}")
-        if driver:
-            ss(driver, "critical_error")
-    finally:
-        if driver:
-            print("[INFO] Закрываем браузер...")
-            driver.quit()
+#     except Exception as e:
+#         print(f"[CRITICAL ERROR]: {e}")
+#         if driver:
+#             ss(driver, "critical_error")
+#     finally:
+#         if driver:
+#             print("[INFO] Закрываем браузер...")
+#             driver.quit()
