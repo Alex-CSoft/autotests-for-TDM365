@@ -15,10 +15,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 #except Exception as e:
 #    raise ImportError("Создайте access.py с URL, sys_login, sys_password, CHROME_DRIVER_PATH (опционально).") from e
 
-URL = os.environ.get("URL") or "http://10.19.10.216:5440"
-sys_login = os.environ.get("sys_login") or "SYSADMIN"
-sys_password = os.environ.get("sys_password") or "Tdm365"
-CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH") or "/usr/bin/chromedriver"
+URL = os.environ.get("URL") #or "http://10.19.10.216:5440" #Убрать после отладки
+sys_login = os.environ.get("sys_login") #or "SYSADMIN" #Убрать после отладки
+sys_password = os.environ.get("sys_password") #or "Tdm365" #Убрать после отладки
+CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH") #or "/usr/bin/chromedriver" #Убрать после отладки
 
 # ---- Настройки / селекторы ----
 WAIT = 10
@@ -104,7 +104,7 @@ def test_TDM6(driver):
         click(driver, SELECTORS["login_submit"])
         print("[SUCCESS] Авторизация прошла успешно!")
 
-        time.sleep(2)  # Пауза
+        time.sleep(5)  # Пауза
         
         click(driver, SELECTORS["menu_objects"], timeout=15)
         print("[STEP] Открылся раздел 'Объекты'")
