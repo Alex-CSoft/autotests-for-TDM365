@@ -5,9 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.action_chains import ActionChains 
+from selenium.webdriver.common.action_chains import ActionChains
 
 # ---- Импорт чувствительных данных ----
 #try:
@@ -46,6 +46,8 @@ def get_driver():
     options.add_argument("--headless")  # убрать во время отладки
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
     #options.add_argument("--disable-infobars") #Убрать после отладки
     #options.add_argument("--disable-extensions") #Убрать после отладки
     
@@ -63,12 +65,27 @@ def find(driver, selector, timeout=WAIT):
         EC.presence_of_element_located((by, value))
     )
 
-def click(driver, selector, timeout=WAIT):
+# def click(driver, selector, timeout=WAIT):
+#     by, value = selector
+#     element = WebDriverWait(driver, timeout).until(
+#         EC.element_to_be_clickable((by, value))
+#     )
+#     element.click()
+
+def click(driver, selector, timeout=15):
     by, value = selector
-    element = WebDriverWait(driver, timeout).until(
-        EC.element_to_be_clickable((by, value))
-    )
-    element.click()
+    try:
+        # Ждём, пока элемент будет видим и кликабелен
+        element = WebDriverWait(driver, timeout).until(
+            EC.element_to_be_clickable((by, value))
+        )
+        try:
+            element.click()
+        except ElementClickInterceptedException:
+            # Если клик не сработал, используем JS
+            driver.execute_script("arguments[0].click();", element)
+    except TimeoutException:
+        raise TimeoutException(f"[ERROR] Элемент '{value}' ({by}) не найден или не кликабелен за {timeout} секунд")
 
 def right_click(driver, selector, timeout=10):
     by, value = selector
