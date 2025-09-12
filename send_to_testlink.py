@@ -18,7 +18,7 @@ BUILD_PREFIX = 'Build' # префикс для имени билда
 tlc = TestlinkAPIClient(API_URL, DEV_KEY)
 
 # Получаем ID тестплана
-testplans = tlc.getTestPlanByName(PLAN_NAME, PROJECT_NAME)
+testplans = tlc.getTestPlanByName(testprojectname=PROJECT_NAME, testplanname=PLAN_NAME)
 if not testplans:
     raise Exception(f'Test Plan "{PLAN_NAME}" в проекте "{PROJECT_NAME}" не найден')
 plan_id = testplans[0]['id']
