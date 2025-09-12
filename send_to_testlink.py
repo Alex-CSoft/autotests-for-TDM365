@@ -37,8 +37,8 @@ while f"{BUILD_PREFIX}_{today_str}_{counter:02}" in existing_names:
 build_name = f"{BUILD_PREFIX}_{today_str}_{counter:02}"
 
 # Создаём билд
-tlc.createBuild(plan_id, build_name, f'Автогенерация билда Jenkins: {build_name}')
-print(f'Создан билд: {build_name}')
+# tlc.createBuild(plan_id, build_name, f'Автогенерация билда Jenkins: {build_name}')
+# print(f'Создан билд: {build_name}')
 
 # -----------------------------
 # Читаем pytest JUnit XML
