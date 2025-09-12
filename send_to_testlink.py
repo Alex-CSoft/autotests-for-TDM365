@@ -62,10 +62,19 @@ NAME_MAP = {
 # Отправка результатов в TestLink
 # -----------------------------
 for testcase in root.findall('.//testcase'):
-    name = testcase.get('name')
-    tl_name = NAME_MAP.get(name, name)  # Получаем имя для TestLink или используем текущее
+    # берем имя файла и имя функции
+    file_name = testcase.get('file') or ''
+    func_name = testcase.get('name') or ''
 
-    # Определяем статус
+    # формируем ключ для маппинга
+    key = func_name
+    if key in NAME_MAP:
+        tl_name = NAME_MAP[key]
+    else:
+        # если не нашли — пробуем взять имя файла
+        tl_name = file_name.split('/')[-1].replace('.py', '')
+
+    # определяем статус
     if testcase.find('failure') is not None:
         status = 'f'
     elif testcase.find('error') is not None:
@@ -75,18 +84,19 @@ for testcase in root.findall('.//testcase'):
     else:
         status = 'p'
 
-    # Получаем ID тесткейса в TestLink
+    # получаем ID тесткейса и отправляем
     try:
         tc_info = tlc.getTestCaseIDByName(tl_name, projectname=PROJECT_NAME)
         if not tc_info:
             print(f'Тесткейc "{tl_name}" не найден в TestLink')
             continue
         tc_id = tc_info[0]['id']
-
+    
         # Отправляем результат
         tlc.reportTCResult(tc_id, PLAN_NAME, buildname=build_name, status=status)
         print(f'Результат отправлен: {tl_name} -> {status}')
     except Exception as e:
         print(f'Ошибка при отправке для {tl_name}: {e}')
+
 
 print('Отправка результатов завершена.')
