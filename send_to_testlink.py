@@ -51,10 +51,19 @@ tree = ET.parse(REPORT_FILE)
 root = tree.getroot()
 
 # -----------------------------
+# Вводим словарь соответствий имен тесткейсов в pytest и TestLink
+# -----------------------------
+NAME_MAP = {
+    'test_TDM6': 'TDM-6',  # pytest имя теста : TestLink имя тесткейса
+    # Добавьте другие соответствия по необходимости
+}
+
+# -----------------------------
 # Отправка результатов в TestLink
 # -----------------------------
 for testcase in root.findall('.//testcase'):
     name = testcase.get('name')
+    tl_name = NAME_MAP.get(name, name)  # Получаем имя для TestLink или используем текущее
 
     # Определяем статус
     if testcase.find('failure') is not None:
@@ -68,16 +77,16 @@ for testcase in root.findall('.//testcase'):
 
     # Получаем ID тесткейса в TestLink
     try:
-        tc_info = tlc.getTestCaseIDByName(name, projectname=PROJECT_NAME)
+        tc_info = tlc.getTestCaseIDByName(tl_name, projectname=PROJECT_NAME)
         if not tc_info:
-            print(f'Тесткейc "{name}" не найден в TestLink')
+            print(f'Тесткейc "{tl_name}" не найден в TestLink')
             continue
         tc_id = tc_info[0]['id']
 
         # Отправляем результат
         tlc.reportTCResult(tc_id, PLAN_NAME, buildname=build_name, status=status)
-        print(f'Результат отправлен: {name} -> {status}')
+        print(f'Результат отправлен: {tl_name} -> {status}')
     except Exception as e:
-        print(f'Ошибка при отправке для {name}: {e}')
+        print(f'Ошибка при отправке для {tl_name}: {e}')
 
 print('Отправка результатов завершена.')
