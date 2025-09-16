@@ -10,11 +10,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.action_chains import ActionChains
 
 # ---- Импорт чувствительных данных ----
-#try:
-#    from access import URL, sys_login, sys_password, CHROME_DRIVER_PATH #В зависимости от теста могут меняться!!!
-#except Exception as e:
-#    raise ImportError("Создайте access.py с URL, sys_login, sys_password, CHROME_DRIVER_PATH (опционально).") from e
-
 URL = os.environ.get("URL") #or "http://10.19.10.216:5440" #Убрать после отладки
 sys_login = os.environ.get("sys_login") #or "SYSADMIN" #Убрать после отладки
 sys_password = os.environ.get("sys_password") #or "Tdm365" #Убрать после отладки

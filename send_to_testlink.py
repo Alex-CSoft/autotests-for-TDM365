@@ -55,14 +55,17 @@ root = tree.getroot()
 # Вводим словарь соответствий имен тесткейсов в pytest и TestLink
 # -----------------------------
 NAME_MAP = {
-    'test_TDM6': 'Создание объекта разработки',  # pytest имя теста : TestLink имя тесткейса
+    'test_TDM5': 'Создание пользователя', # pytest имя теста : TestLink имя тесткейса
+    'test_TDM6': 'Создание объекта разработки',
+    'test_TDM7': 'Создание проекта',
+    'test_TDM8': 'Создание, наполнение пользователями и назначение групп на проекте',
     # Добавьте другие соответствия по необходимости
 }
 
 # -----------------------------
 # Получаем все тесткейсы проекта один раз
 # -----------------------------
-all_cases = tlc.getTestCasesForTestPlan(plan_id)
+all_cases = tlc.getTestCasesForTestPlan(testplanid=plan_id)
 case_map = {tc['name']: tc['id'] for tc in all_cases}
 
 # -----------------------------
@@ -83,6 +86,12 @@ for testcase in root.findall('.//testcase'):
     #     # если не нашли — пробуем взять имя файла
     #     tl_name = file_name.split('/')[-1].replace('.py', '')
 
+    # Получаем ID тест-кейса
+    tc_id = case_map.get(tl_name)
+    if not tc_id:
+        print(f'Тесткейc "{tl_name}" не найден в TestLink')
+        continue  
+
     # определяем статус
     if testcase.find('failure') is not None:
         status = 'f'
@@ -101,12 +110,6 @@ for testcase in root.findall('.//testcase'):
         #     continue
         # tc_id = tc_info[0]['id']
         # print(tc_info)
-
-    # Получаем ID тест-кейса
-    tc_id = case_map.get(tl_name)
-    if not tc_id:
-        print(f'Тесткейc "{tl_name}" не найден в TestLink')
-        continue        
 
     # Получаем ID тест-плана
         # plan = tlc.getTestPlanByName(PROJECT_NAME, PLAN_NAME)
