@@ -7,7 +7,7 @@ from testlink import TestlinkAPIClient
 # Настройки TestLink
 # -----------------------------
 API_URL = 'http://10.19.10.112/Testlink/lib/api/xmlrpc.php'  # URL TestLink (Именно ссылка на API)
-DEV_KEY = '55fe2c4903ae7b14b5a6c1d150bf7d14'  # API Key TestLink
+DEV_KEY = '218d3ad8c232d5b86edf80ba3df5fea1'  # API Key TestLink
 PROJECT_NAME = 'TDM365'  # имя проекта в TestLink
 PLAN_NAME = 'Smoke' # имя тестплана в TestLink
 BUILD_PREFIX = 'Build' # префикс для имени билда
