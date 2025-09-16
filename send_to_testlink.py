@@ -90,7 +90,7 @@ for testcase in root.findall('.//testcase'):
         if not tc_info:
             print(f'Тесткейc "{tl_name}" не найден в TestLink')
             continue
-        tc_id = tc_info[0]['tc_id']
+        tc_id = tc_info[0]['id']
         print(tc_info)
 
     # Получаем ID тест-плана
