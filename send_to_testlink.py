@@ -32,7 +32,7 @@ existing_names = [b['name'] for b in existing_builds]
 
 # Определяем порядковый номер билда
 counter = 1
-while f"{BUILD_PREFIX}_{today_str}_{counter:02}" in existing_names:
+while f"{BUILD_PREFIX}{today_str}{counter:02}" in existing_names:
     counter += 1
 build_name = f"{BUILD_PREFIX}_{today_str}_{counter:02}"
 
