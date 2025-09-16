@@ -63,10 +63,20 @@ NAME_MAP = {
 }
 
 # -----------------------------
-# Получаем все тесткейсы проекта один раз
+# Получаем все тесткейсы плана за один раз
 # -----------------------------
 all_cases = tlc.getTestCasesForTestPlan(testplanid=plan_id)
-case_map = {tc['name']: tc['id'] for tc in all_cases}
+
+# Приводим к словарю: имя -> id
+case_map = {}
+for tc in all_cases:
+    if isinstance(tc, dict):
+        case_map[tc['name']] = tc['id']
+    else:
+        # tc это ID (строка/число), тогда берём данные через getTestCase
+        info = tlc.getTestCase(tc)
+        case_map[info['name']] = info['id']
+
 
 # -----------------------------
 # Отправка результатов в TestLink
