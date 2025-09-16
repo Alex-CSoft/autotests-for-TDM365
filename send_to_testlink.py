@@ -73,9 +73,10 @@ for tc in all_cases:
     if isinstance(tc, dict):
         case_map[tc['name']] = tc['id']
     else:
-        # tc это ID (строка/число), тогда берём данные через getTestCase
-        info = tlc.getTestCase(tc)
-        case_map[info['name']] = info['id']
+        # tc это ID (строка/число), тогда получаем данные через getTestCase
+        info_list = tlc.getTestCase(tc)
+        for info in info_list:  # идём по списку
+            case_map[info['name']] = info['id']
 
 
 # -----------------------------
