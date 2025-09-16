@@ -10,7 +10,8 @@ API_URL = 'http://10.19.10.112/Testlink/lib/api/xmlrpc.php'  # URL TestLink (И�
 DEV_KEY = 'abf01b172d2ce387bece913e6638824f'  # API Key TestLink
 PROJECT_NAME = 'TDM365'  # имя проекта в TestLink
 PLAN_NAME = 'Smoke' # имя тестплана в TestLink
-BUILD_PREFIX = 'Build' # префикс для имени билда
+BUILD_NAME = "Build_20250916_01"
+PLATFORM_NAME = "Win 10x64 - Google Chrome - PostgreSQL"
 
 # -----------------------------
 # Подключение к TestLink
@@ -41,14 +42,9 @@ plan_id = testplans[0]['id']
 # print(f'Создан билд: {build_name}')
 
 # -----------------------------
-# Вводим имя билда вручную
-# -----------------------------
-build_name = "Build_20250916_01"
-
-# -----------------------------
 # Читаем pytest JUnit XML
 # -----------------------------
-REPORT_FILE = 'report.xml'  # путь к pytest --junitxml=report.xml
+REPORT_FILE = 'report.xml'
 if not os.path.exists(REPORT_FILE):
     raise FileNotFoundError(f'{REPORT_FILE} не найден')
 
@@ -64,20 +60,28 @@ NAME_MAP = {
 }
 
 # -----------------------------
+# Получаем все тесткейсы проекта один раз
+# -----------------------------
+all_cases = tlc.getTestCasesForTestProject(PROJECT_NAME)
+case_map = {tc['name']: tc['id'] for tc in all_cases}
+
+# -----------------------------
 # Отправка результатов в TestLink
 # -----------------------------
 for testcase in root.findall('.//testcase'):
-    # берем имя файла и имя функции
     file_name = testcase.get('file') or ''
     func_name = testcase.get('name') or ''
 
+    # Определяем имя тесткейса для TestLink
+    tl_name = NAME_MAP.get(func_name, file_name.split('/')[-1].replace('.py',''))
+
     # формируем ключ для маппинга
-    key = func_name
-    if key in NAME_MAP:
-        tl_name = NAME_MAP[key]
-    else:
-        # если не нашли — пробуем взять имя файла
-        tl_name = file_name.split('/')[-1].replace('.py', '')
+    # key = func_name
+    # if key in NAME_MAP:
+    #     tl_name = NAME_MAP[key]
+    # else:
+    #     # если не нашли — пробуем взять имя файла
+    #     tl_name = file_name.split('/')[-1].replace('.py', '')
 
     # определяем статус
     if testcase.find('failure') is not None:
@@ -89,34 +93,40 @@ for testcase in root.findall('.//testcase'):
     else:
         status = 'p'
 
-    try:
+    #try:
     # Получаем ID тест-кейса
-        tc_info = tlc.getTestCaseIDByName(tl_name, projectname=PROJECT_NAME)
-        if not tc_info:
-            print(f'Тесткейc "{tl_name}" не найден в TestLink')
-            continue
-        tc_id = tc_info[0]['id']
-        print(tc_info)
+        # tc_info = tlc.getTestCaseIDByName(tl_name, projectname=PROJECT_NAME)
+        # if not tc_info:
+        #     print(f'Тесткейc "{tl_name}" не найден в TestLink')
+        #     continue
+        # tc_id = tc_info[0]['id']
+        # print(tc_info)
+
+    # Получаем ID тест-кейса
+    tc_id = case_map.get(tl_name)
+    if not tc_id:
+        print(f'Тесткейc "{tl_name}" не найден в TestLink')
+        continue        
 
     # Получаем ID тест-плана
-        plan = tlc.getTestPlanByName(PROJECT_NAME, PLAN_NAME)
-        if not plan:
-            print(f'Тест-план "{PLAN_NAME}" не найден в TestLink')
-            continue
-        plan_id = plan[0]['id']
-        print(plan)
+        # plan = tlc.getTestPlanByName(PROJECT_NAME, PLAN_NAME)
+        # if not plan:
+        #     print(f'Тест-план "{PLAN_NAME}" не найден в TestLink')
+        #     continue
+        # plan_id = plan[0]['id']
+        # print(plan)
 
     # Отправляем результат
+    try:
         tlc.reportTCResult(
             testcaseid=tc_id,
             testplanid=plan_id,
-            buildname=build_name,
+            buildname=BUILD_NAME,
             status=status,
             notes="Автотест выполнен через Jenkins",
-            platformname="Win 10x64 - Google Chrome - PostgreSQL"
+            platformname=PLATFORM_NAME
         )
         print(f'Результат отправлен: {tl_name} -> {status}')
-
     except Exception as e:
         print(f'Ошибка при отправке для {tl_name}: {e}')
 
