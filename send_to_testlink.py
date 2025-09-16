@@ -62,7 +62,7 @@ NAME_MAP = {
 # -----------------------------
 # Получаем все тесткейсы проекта один раз
 # -----------------------------
-all_cases = tlc.getTestCasesForTestProject(PROJECT_NAME)
+all_cases = tlc.getTestCasesForTestProject(plan_id)
 case_map = {tc['name']: tc['id'] for tc in all_cases}
 
 # -----------------------------
