@@ -84,19 +84,32 @@ for testcase in root.findall('.//testcase'):
     else:
         status = 'p'
 
-    # получаем ID тесткейса и отправляем
     try:
+    # Получаем ID тест-кейса
         tc_info = tlc.getTestCaseIDByName(tl_name, projectname=PROJECT_NAME)
         if not tc_info:
             print(f'Тесткейc "{tl_name}" не найден в TestLink')
             continue
-        tc_id = tc_info[0]['id']
-    
-        # Отправляем результат
-        tlc.reportTCResult(tc_id, PLAN_NAME, buildname=build_name, status=status)
+        tc_id = tc_info['id']
+
+    # Получаем ID тест-плана
+        plan = tlc.getTestPlanByName(PLAN_NAME, PROJECT_NAME)
+        if not plan:
+            print(f'Тест-план "{PLAN_NAME}" не найден в TestLink')
+            continue
+        plan_id = plan[0]['id']
+
+    # Отправляем результат
+        tlc.reportTCResult(
+            testcaseid=tc_id,
+            testplanid=plan_id,
+            buildname=build_name,
+            status=status,
+            notes="Автотест выполнен через Jenkins"
+        )
         print(f'Результат отправлен: {tl_name} -> {status}')
+
     except Exception as e:
         print(f'Ошибка при отправке для {tl_name}: {e}')
-
 
 print('Отправка результатов завершена.')
