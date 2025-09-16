@@ -90,7 +90,8 @@ for testcase in root.findall('.//testcase'):
         if not tc_info:
             print(f'Тесткейc "{tl_name}" не найден в TestLink')
             continue
-        tc_id = tc_info['id']
+        tc_id = tc_info[0]['tc_id']
+        print(tc_info)
 
     # Получаем ID тест-плана
         plan = tlc.getTestPlanByName(PLAN_NAME, PROJECT_NAME)
@@ -98,6 +99,7 @@ for testcase in root.findall('.//testcase'):
             print(f'Тест-план "{PLAN_NAME}" не найден в TestLink')
             continue
         plan_id = plan[0]['id']
+        print(plan)
 
     # Отправляем результат
         tlc.reportTCResult(
