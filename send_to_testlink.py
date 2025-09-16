@@ -112,7 +112,8 @@ for testcase in root.findall('.//testcase'):
             testplanid=plan_id,
             buildname=build_name,
             status=status,
-            notes="Автотест выполнен через Jenkins"
+            notes="Автотест выполнен через Jenkins",
+            platformname="Win 10x64 - Google Chrome - PostgreSQL"
         )
         print(f'Результат отправлен: {tl_name} -> {status}')
 
