@@ -26,19 +26,24 @@ plan_id = testplans[0]['id']
 # -----------------------------
 # Создаём имя билда: Build_YYYYMMDD_XX
 # -----------------------------
-today_str = datetime.now().strftime('%Y%m%d')
-existing_builds = tlc.getBuildsForTestPlan(plan_id)
-existing_names = [b['name'] for b in existing_builds]
+# today_str = datetime.now().strftime('%Y%m%d')
+# existing_builds = tlc.getBuildsForTestPlan(plan_id)
+# existing_names = [b['name'] for b in existing_builds]
 
 # Определяем порядковый номер билда
-counter = 1
-while f"{BUILD_PREFIX}{today_str}{counter:02}" in existing_names:
-    counter += 1
-build_name = f"{BUILD_PREFIX}_{today_str}_{counter:02}"
+# counter = 1
+# while f"{BUILD_PREFIX}_{today_str}_{counter:02}" in existing_names:
+#     counter += 1
+# build_name = f"{BUILD_PREFIX}_{today_str}_{counter:02}"
 
 # Создаём билд
-tlc.createBuild(plan_id, build_name, f'Автогенерация билда Jenkins: {build_name}')
-print(f'Создан билд: {build_name}')
+# tlc.createBuild(plan_id, build_name, f'Автогенерация билда Jenkins: {build_name}')
+# print(f'Создан билд: {build_name}')
+
+# -----------------------------
+# Вводим имя билда вручную
+# -----------------------------
+build_name = "Build_20250916_01"
 
 # -----------------------------
 # Читаем pytest JUnit XML
