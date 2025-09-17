@@ -67,17 +67,19 @@ NAME_MAP = {
 # -----------------------------
 all_cases = tlc.getTestCasesForTestPlan(testplanid=plan_id)
 
-# Приводим к словарю: имя -> external_id
+PROJECT_PREFIX = "TDM"
+
 case_map = {}
 for tc in all_cases:
     if isinstance(tc, dict):
-        # всегда используем внешний ID (например, "TDM-5")
-        case_map[tc['name']] = tc['tc_external_id']
+        external_id = f"{PROJECT_PREFIX}-{tc['tc_external_id']}"
+        case_map[tc['name']] = external_id
     else:
-        # если вернулся просто ID — запрашиваем детали через getTestCase
         info_list = tlc.getTestCase(tc)
         for info in info_list:
-            case_map[info['name']] = info['tc_external_id']
+            external_id = f"{PROJECT_PREFIX}-{info['tc_external_id']}"
+            case_map[info['name']] = external_id
+
 
 
 # -----------------------------
