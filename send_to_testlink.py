@@ -71,12 +71,14 @@ all_cases = tlc.getTestCasesForTestPlan(testplanid=plan_id)
 case_map = {}
 for tc in all_cases:
     if isinstance(tc, dict):
-        case_map[tc['name']] = tc['external_id']
+        # иногда external id лежит как tc_external_id
+        case_map[tc['name']] = tc.get('tc_external_id', tc['id'])
     else:
         # tc это ID (строка/число), тогда получаем данные через getTestCase
         info_list = tlc.getTestCase(tc)
-        for info in info_list:  # идём по списку
-            case_map[info['name']] = info['external_id']
+        for info in info_list:
+            case_map[info['name']] = info.get('tc_external_id', info['id'])
+
 
 
 # -----------------------------
@@ -133,7 +135,7 @@ for testcase in root.findall('.//testcase'):
     # Отправляем результат
     try:
         tlc.reportTCResult(
-            testcaseexternalid=tc_id,
+            testcaseexternalid=tc_id,   # используем external id
             testplanid=plan_id,
             buildname=BUILD_NAME,
             status=status,
@@ -144,5 +146,8 @@ for testcase in root.findall('.//testcase'):
         print(f'Результат отправлен: {tl_name} -> {status}')
     except Exception as e:
         print(f'Ошибка при отправке для {tl_name}: {e}')
+
+for info in info_list:
+    print("Keys:", info.keys())
 
 print('Отправка результатов завершена.')
