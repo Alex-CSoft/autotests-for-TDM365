@@ -67,16 +67,16 @@ NAME_MAP = {
 # -----------------------------
 all_cases = tlc.getTestCasesForTestPlan(testplanid=plan_id)
 
-# Приводим к словарю: имя -> id
+# Приводим к словарю: имя -> external_id
 case_map = {}
 for tc in all_cases:
     if isinstance(tc, dict):
-        case_map[tc['name']] = tc['id']
+        case_map[tc['name']] = tc['external_id']
     else:
         # tc это ID (строка/число), тогда получаем данные через getTestCase
         info_list = tlc.getTestCase(tc)
         for info in info_list:  # идём по списку
-            case_map[info['name']] = info['id']
+            case_map[info['name']] = info['external_id']
 
 
 # -----------------------------
@@ -133,13 +133,14 @@ for testcase in root.findall('.//testcase'):
     # Отправляем результат
     try:
         tlc.reportTCResult(
-            testcaseid=tc_id,
+            testcaseexternalid=tc_id,
             testplanid=plan_id,
             buildname=BUILD_NAME,
             status=status,
             notes="Автотест выполнен через Jenkins",
             platformname=PLATFORM_NAME
         )
+
         print(f'Результат отправлен: {tl_name} -> {status}')
     except Exception as e:
         print(f'Ошибка при отправке для {tl_name}: {e}')
