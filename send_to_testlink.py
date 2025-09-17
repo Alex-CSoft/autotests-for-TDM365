@@ -71,14 +71,13 @@ all_cases = tlc.getTestCasesForTestPlan(testplanid=plan_id)
 case_map = {}
 for tc in all_cases:
     if isinstance(tc, dict):
-        # иногда external id лежит как tc_external_id
-        case_map[tc['name']] = tc.get('tc_external_id', tc['id'])
+        # всегда используем внешний ID (например, "TDM-5")
+        case_map[tc['name']] = tc['tc_external_id']
     else:
-        # tc это ID (строка/число), тогда получаем данные через getTestCase
+        # если вернулся просто ID — запрашиваем детали через getTestCase
         info_list = tlc.getTestCase(tc)
         for info in info_list:
-            case_map[info['name']] = info.get('tc_external_id', info['id'])
-
+            case_map[info['name']] = info['tc_external_id']
 
 
 # -----------------------------
