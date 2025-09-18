@@ -3,17 +3,21 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from selenium.webdriver.common.action_chains import ActionChains
 
 # ---- Импорт чувствительных данных ----
 URL = os.environ.get("URL") #or "http://10.19.10.216:5440" #Убрать после отладки
 sys_login = os.environ.get("sys_login") #or "SYSADMIN" #Убрать после отладки
 sys_password = os.environ.get("sys_password") #or "Tdm365" #Убрать после отладки
-CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH") #or "/usr/bin/chromedriver" #Убрать после отладки
+#CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH") or "/usr/bin/chromedriver" #Убрать после отладки
 
 # ---- Настройки / селекторы ----
 WAIT = 10
@@ -25,8 +29,6 @@ SELECTORS = {
     "login-authorization": (By.ID, "login-authorization"),
     "password-authorization": (By.ID, "password-authorization"),
     "login_submit": (By.ID, "authorization-button"),
-
-    # Кнопка раздела "Объекты"
     "menu_objects": (By.ID, "objects-tab"),
     "object_dev": (By.CSS_SELECTOR, '[data-reference="CMD_OBJECT_STRUCTURE_CREATE"]'),
     "field_cod_object": (By.CSS_SELECTOR, '[data-signature="input-body"]'),
@@ -35,21 +37,21 @@ SELECTORS = {
 }
 
 # ---- Helpers ----
-def get_driver():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--start-maximized")
-    options.add_argument("--headless")  # убрать во время отладки
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920,1080")
-    #options.add_argument("--disable-infobars") #Убрать после отладки
-    #options.add_argument("--disable-extensions") #Убрать после отладки
+# def get_driver():
+#     options = webdriver.ChromeOptions()
+#     options.add_argument("--start-maximized")
+#     options.add_argument("--headless")  # убрать во время отладки
+#     options.add_argument("--no-sandbox")
+#     options.add_argument("--disable-dev-shm-usage")
+#     options.add_argument("--disable-gpu")
+#     options.add_argument("--window-size=1920,1080")
+#     #options.add_argument("--disable-infobars") #Убрать после отладки
+#     #options.add_argument("--disable-extensions") #Убрать после отладки
     
-    # Используем webdriver-manager для автоматического скачивания подходящего драйвера
-    service = ChromeService(ChromeDriverManager().install())
+#     # Используем webdriver-manager для автоматического скачивания подходящего драйвера
+#     service = ChromeService(ChromeDriverManager().install())
 
-    return webdriver.Chrome(service=service, options=options)
+#     return webdriver.Chrome(service=service, options=options)
 
 def ss(driver, name):
     driver.save_screenshot(f"{name}.png")
@@ -59,13 +61,6 @@ def find(driver, selector, timeout=WAIT):
     return WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((by, value))
     )
-
-# def click(driver, selector, timeout=WAIT):
-#     by, value = selector
-#     element = WebDriverWait(driver, timeout).until(
-#         EC.element_to_be_clickable((by, value))
-#     )
-#     element.click()
 
 def click(driver, selector, timeout=15):
     by, value = selector
@@ -90,15 +85,56 @@ def right_click(driver, selector, timeout=10):
     ActionChains(driver).context_click(element).perform()
 
 # ---- Fixtures ----
-@pytest.fixture(scope="session")
-def driver():
-    driver = get_driver()
+@pytest.fixture(params=[b.strip() for b in os.environ.get("BROWSERS","chrome").split(",")])
+def driver(request):
+    browser_name = request.param.lower()
+    driver = None
+
+    if browser_name == "chrome":
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+        options.add_argument("--headless")  # убрать для локальной отладки
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--window-size=1920,1080")
+        #options.add_argument("--disable-infobars") #Убрать после отладки
+        #options.add_argument("--disable-extensions") #Убрать после отладки
+        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+
+    elif browser_name == "firefox":
+        options = webdriver.FirefoxOptions()
+        options.add_argument("--start-maximized")
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--window-size=1920,1080")
+        #options.add_argument("--disable-infobars") #Убрать после отладки
+        #options.add_argument("--disable-extensions") #Убрать после отладки
+        driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=options)
+
+    elif browser_name == "edge":
+        options = webdriver.EdgeOptions()
+        options.add_argument("--start-maximized")
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--window-size=1920,1080")
+        #options.add_argument("--disable-infobars") #Убрать после отладки
+        #options.add_argument("--disable-extensions") #Убрать после отладки
+        driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
+
+    else:
+        raise ValueError(f"Браузер {browser_name} не поддерживается")
+
+    driver.browser_name = browser_name  # сохраняем для отчета
     yield driver
     driver.quit()
 
 # ---- Steps ----
 def test_TDM6(driver):
     try:
+        print(f"[INFO] Запуск теста на браузере: {driver.browser_name}")
         print("[STEP] Переходим на страницу логина")
         driver.get(URL)
         
