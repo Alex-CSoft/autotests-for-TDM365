@@ -110,10 +110,10 @@ for browser in BROWSERS:
     for testcase in root.findall('.//testcase'):
         func_name = testcase.get('name') or ''
         clean_name = re.sub(r"\[.*\]$", "", func_name)  # Убираем параметры в квадратных скобках
-        tl_name = NAME_MAP.get(func_name)
+        tl_name = NAME_MAP.get(clean_name)
 
         if not tl_name:
-            print(f'Для pytest-теста "{func_name}" нет соответствия в NAME_MAP')
+            print(f'Для pytest-теста "{clean_name}" нет соответствия в NAME_MAP')
             continue
 
         tc_external_id = case_map.get(tl_name)
