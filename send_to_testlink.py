@@ -1,6 +1,8 @@
 import os
 import xml.etree.ElementTree as ET
+import re
 from testlink import TestlinkAPIClient
+
 
 # -----------------------------
 # Настройки TestLink
@@ -107,6 +109,7 @@ for browser in BROWSERS:
 
     for testcase in root.findall('.//testcase'):
         func_name = testcase.get('name') or ''
+        clean_name = re.sub(r"\[.*\]$", "", func_name)  # Убираем параметры в квадратных скобках
         tl_name = NAME_MAP.get(func_name)
 
         if not tl_name:
