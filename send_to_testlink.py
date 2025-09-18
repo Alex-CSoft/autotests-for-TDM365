@@ -1,6 +1,5 @@
 import os
 import xml.etree.ElementTree as ET
-from datetime import datetime
 from testlink import TestlinkAPIClient
 
 # -----------------------------
@@ -63,7 +62,7 @@ NAME_MAP = {
 }
 
 # -----------------------------
-# Получаем все тесткейсы плана за один раз
+# Собираем карту external_id для всех тестов из плана
 # -----------------------------
 all_cases = tlc.getTestCasesForTestPlan(testplanid=plan_id)
 
@@ -86,25 +85,17 @@ for tc in all_cases:
 # Отправка результатов в TestLink
 # -----------------------------
 for testcase in root.findall('.//testcase'):
-    file_name = testcase.get('file') or ''
     func_name = testcase.get('name') or ''
+    tl_name = NAME_MAP.get(func_name)
 
-    # Определяем имя тесткейса для TestLink
-    tl_name = NAME_MAP.get(func_name, file_name.split('/')[-1].replace('.py',''))
+    if not tl_name:
+        print(f'Для pytest-теста "{func_name}" нет соответствия в NAME_MAP')
+        continue
 
-    # формируем ключ для маппинга
-    # key = func_name
-    # if key in NAME_MAP:
-    #     tl_name = NAME_MAP[key]
-    # else:
-    #     # если не нашли — пробуем взять имя файла
-    #     tl_name = file_name.split('/')[-1].replace('.py', '')
-
-    # Получаем ID тест-кейса
-    tc_id = case_map.get(tl_name)
-    if not tc_id:
+    tc_external_id = case_map.get(tl_name)
+    if not tc_external_id:
         print(f'Тесткейc "{tl_name}" не найден в TestLink')
-        continue  
+        continue
 
     # определяем статус
     if testcase.find('failure') is not None:
@@ -116,39 +107,17 @@ for testcase in root.findall('.//testcase'):
     else:
         status = 'p'
 
-    #try:
-    # Получаем ID тест-кейса
-        # tc_info = tlc.getTestCaseIDByName(tl_name, projectname=PROJECT_NAME)
-        # if not tc_info:
-        #     print(f'Тесткейc "{tl_name}" не найден в TestLink')
-        #     continue
-        # tc_id = tc_info[0]['id']
-        # print(tc_info)
-
-    # Получаем ID тест-плана
-        # plan = tlc.getTestPlanByName(PROJECT_NAME, PLAN_NAME)
-        # if not plan:
-        #     print(f'Тест-план "{PLAN_NAME}" не найден в TestLink')
-        #     continue
-        # plan_id = plan[0]['id']
-        # print(plan)
-
-    # Отправляем результат
     try:
         tlc.reportTCResult(
-            testcaseexternalid=tc_id,   # используем external id
+            testcaseexternalid=tc_external_id,
             testplanid=plan_id,
             buildname=BUILD_NAME,
             status=status,
-            notes="Автотест выполнен через Jenkins",
+            notes=f"Автотест {func_name} выполнен через Jenkins",
             platformname=PLATFORM_NAME
         )
-
         print(f'Результат отправлен: {tl_name} -> {status}')
     except Exception as e:
         print(f'Ошибка при отправке для {tl_name}: {e}')
-
-for info in info_list:
-    print("Keys:", info.keys())
 
 print('Отправка результатов завершена.')
