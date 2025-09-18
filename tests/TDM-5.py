@@ -10,7 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.action_chains import ActionChains
 
 # ---- Импорт чувствительных данных ----
-URL = os.environ.get("URL") #or "http://10.19.10.216:5440" #Убрать после отладки
+URL = os.environ.get("URL") #or "http://10.19.10.252:5440" #Убрать после отладки
 sys_login = os.environ.get("sys_login") #or "SYSADMIN" #Убрать после отладки
 sys_password = os.environ.get("sys_password") #or "Tdm365" #Убрать после отладки
 CHROME_DRIVER_PATH = os.environ.get("CHROME_DRIVER_PATH") #or "/usr/bin/chromedriver" #Убрать после отладки
