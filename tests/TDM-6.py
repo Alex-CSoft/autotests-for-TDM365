@@ -36,23 +36,6 @@ SELECTORS = {
     "ok_button": (By.CSS_SELECTOR, '[data-reference="ok-modal-window-btn"]'), 
 }
 
-# ---- Helpers ----
-# def get_driver():
-#     options = webdriver.ChromeOptions()
-#     options.add_argument("--start-maximized")
-#     options.add_argument("--headless")  # убрать во время отладки
-#     options.add_argument("--no-sandbox")
-#     options.add_argument("--disable-dev-shm-usage")
-#     options.add_argument("--disable-gpu")
-#     options.add_argument("--window-size=1920,1080")
-#     #options.add_argument("--disable-infobars") #Убрать после отладки
-#     #options.add_argument("--disable-extensions") #Убрать после отладки
-    
-#     # Используем webdriver-manager для автоматического скачивания подходящего драйвера
-#     service = ChromeService(ChromeDriverManager().install())
-
-#     return webdriver.Chrome(service=service, options=options)
-
 def ss(driver, name):
     driver.save_screenshot(f"{name}.png")
 
@@ -105,7 +88,7 @@ def driver(request):
     elif browser_name == "firefox":
         options = webdriver.FirefoxOptions()
         options.add_argument("--start-maximized")
-        options.add_argument("--headless")
+        options.add_argument("--headless")  # убрать для локальной отладки
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--window-size=1920,1080")

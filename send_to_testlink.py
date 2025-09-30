@@ -11,7 +11,7 @@ API_URL = 'http://10.19.10.112/Testlink/lib/api/xmlrpc.php'  # URL TestLink (И�
 DEV_KEY = 'abf01b172d2ce387bece913e6638824f'  # API Key TestLink
 PROJECT_NAME = 'TDM365'  # имя проекта в TestLink
 PLAN_NAME = 'Smoke' # имя тестплана в TestLink
-BUILD_NAME = "Build_20250918_01"
+BUILD_NAME = "Build_20250918_01" #Название билда, в который будут загружаться результаты
 #PLATFORM_NAME = "Win 10x64 - Google Chrome - PostgreSQL"
 
 # -----------------------------
